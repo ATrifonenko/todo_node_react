@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  height: 100%;
+  max-width: 1024px;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-box {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  margin: 0 auto;
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12);
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.auth-box__title {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.auth-box__question {
+  margin-top: 10px;
+  align-self: center;
+  font-size: 14px;
+}
+
+.auth-box__question-link {
+  text-decoration: none;
+  color: #2582e7;
+}
