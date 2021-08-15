@@ -1,27 +1,34 @@
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import { SignUp, SignIn } from './components/Auth/Auth';
-import { useAuth, ProvideAuth } from './hooks/useAuth';
+import { useAuth } from './hooks/useAuth';
 import Spinner from 'react-bootstrap/Spinner';
+import Button from 'react-bootstrap/Button';
+import api from './api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 function App() {
+  const history = useHistory();
+
+  const handleLogout = async () => {
+    await api.auth.logout();
+    history.replace('/signin');
+  };
+
   return (
-    <ProvideAuth>
-      <BrowserRouter>
-        <div className="App">
-          <Switch>
-            <Route path="/signup">
-              <SignUp />
-            </Route>
-            <Route path="/signin">
-              <SignIn />
-            </Route>
-            <PrivateRoute path="/">{'todolist component'}</PrivateRoute>
-          </Switch>
-        </div>
-      </BrowserRouter>
-    </ProvideAuth>
+    <div className="App">
+      <Switch>
+        <Route path="/signup">
+          <SignUp />
+        </Route>
+        <Route path="/signin">
+          <SignIn />
+        </Route>
+        <PrivateRoute path="/">
+          <Button onClick={handleLogout}>Выйти</Button>
+        </PrivateRoute>
+      </Switch>
+    </div>
   );
 }
 
@@ -36,7 +43,7 @@ function PrivateRoute({ children, ...rest }) {
           <div className="wrapper-spinner">
             <Spinner animation="border" />
           </div>
-        ) : user ? (
+        ) : user.logged ? (
           children
         ) : (
           <Redirect to={{ pathname: '/signin', state: { from: location } }} />

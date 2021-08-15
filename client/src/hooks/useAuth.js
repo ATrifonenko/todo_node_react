@@ -15,25 +15,33 @@ export const useAuth = () => {
 
 function useProvideAuth() {
   const [user, setUser] = useState(null);
-  const [isAuthenticating, setIsAuthenticating] = useState(false); // вернуть true
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
+
   useEffect(() => {
-    api.auth.checkAuth().then((user) => {
-      if (user.logged) {
+    const fetchUser = async () => {
+      const user = await api.auth.checkAuth();
+      if (user) {
         setUser(user);
         setIsAuthenticating(false);
+        console.log(user);
       }
-    });
+    };
+    fetchUser();
   }, []);
-  const signIn = (email, password) => {
-    // Логин с возвратом user
+
+  const signIn = async (email, password) => {
+    await api.auth.signIn(email, password).then((user) => setUser(user));
   };
-  const signUp = (email, password) => {
-    // Регистрация с возвратом user
+  const signUp = async (email, password, firstName, secondName, patronymic) => {
+    await api.auth.signUp(email, password, firstName, secondName, patronymic).then((user) => setUser(user));
   };
+  const logout = () => api.auth.logout().then((user) => setUser(user));
+
   return {
     user,
     isAuthenticating,
     signIn,
     signUp,
+    logout,
   };
 }

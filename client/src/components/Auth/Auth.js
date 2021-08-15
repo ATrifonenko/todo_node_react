@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useAuth } from '../../hooks/useAuth';
@@ -14,23 +14,15 @@ function Auth(props) {
   const [errors, setErrors] = useState({});
 
   let history = useHistory();
-  let location = useLocation();
-
-  const redirectAfterLogin = () => {
-    let { from } = location.state || { from: { pathname: '/' } };
-    history.replace(from);
-  };
 
   const submit = (e) => {
+    e.preventDefault();
     const validationErrors = validate(email, password);
 
     if (Object.entries(validationErrors).length === 0) {
       setErrors({});
-      console.log('dct uel');
-      //props.submit(email, password).then(() => redirectAfterLogin());
+      props.submit(email, password, firstName, secondName, patronymic).then(() => history.replace('/'));
     } else {
-      e.preventDefault();
-      e.stopPropagation();
       setErrors(validationErrors);
     }
   };
@@ -138,11 +130,11 @@ function Auth(props) {
 }
 
 export function SignIn() {
-  //  let auth = useAuth();
-  return <Auth type="signin" submit={() => console.log('123')} />;
+  let auth = useAuth();
+  return <Auth type="signin" submit={auth.signIn} />;
 }
 
 export function SignUp() {
-  // let auth = useAuth();
-  return <Auth type="signup" submit={() => console.log('123')} />;
+  let auth = useAuth();
+  return <Auth type="signup" submit={auth.signUp} />;
 }
