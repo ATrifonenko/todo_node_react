@@ -5,7 +5,7 @@ const todoModel = require('./models/todo.js');
 
 const sequelize = new Sequelize(config.DB_NAME, config.DB_USER, config.DB_PASSWORD, {
   dialect: 'mysql',
-  define: { timestamps: false },
+  define: { timestamps: true },
 });
 
 const db = {

@@ -11,6 +11,8 @@ const api = {
     logout: () => axios.get('/api/users/logout').then((res) => res.data.user),
   },
   todo: {
+    getTodo: () => axios.get('/api/todo/getTodo').then((res) => res.data.todo),
+    getTodoById: (id) => axios.get('/api/todo/getTodoById', { params: { id } }).then((res) => res.data),
     add: (data) => axios.post('/api/todo/add', data).then((res) => res.data),
   },
 };

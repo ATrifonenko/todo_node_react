@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
@@ -12,9 +12,25 @@ function TodoFull(props) {
     desc: '',
     priority: 'mid',
     status: 'todo',
-    date: '',
+    date_end: '',
     executor: '',
   });
+
+  useEffect(() => {
+    if (props.id) {
+      const fetchTodo = async () => {
+        const todo = await api.todo.getTodoById(props.id);
+        console.log(todo);
+        setData({ ...todo });
+        console.log(data);
+      };
+      fetchTodo();
+    }
+  }, [props.id]);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   const closeModal = () => {
     setData({
@@ -70,7 +86,7 @@ function TodoFull(props) {
 
             <Form.Group as={Col} controlId="date">
               <Form.Label>Сроки</Form.Label>
-              <Form.Control type="date" value={data.value} onChange={handleChange} />
+              <Form.Control type="date" value={data.date_end} onChange={handleChange} />
             </Form.Group>
           </Row>
 
