@@ -2,10 +2,10 @@ import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import { SignUp, SignIn } from './components/Auth/Auth';
 import { useAuth } from './hooks/useAuth';
 import Spinner from 'react-bootstrap/Spinner';
-import Button from 'react-bootstrap/Button';
 import api from './api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import Todolist from './components/Todolist/Todolist';
 
 function App() {
   const history = useHistory();
@@ -25,7 +25,7 @@ function App() {
           <SignIn />
         </Route>
         <PrivateRoute path="/">
-          <Button onClick={handleLogout}>Выйти</Button>
+          <Todolist logoutBtn={handleLogout}></Todolist>
         </PrivateRoute>
       </Switch>
     </div>
