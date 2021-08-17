@@ -25,8 +25,8 @@ const signIn = (req, res) => {
           } else {
             req.session.userId = user.id;
             req.session.userEmail = user.email;
-            res.json({
-              user: { logged: true, name: user.fullName },
+            res.status(200).json({
+              user: { logged: true, id: user.id, name: user.fullName },
             });
           }
         });

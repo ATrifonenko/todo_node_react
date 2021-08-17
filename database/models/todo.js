@@ -14,11 +14,10 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
     },
     creator: {
-      type: Sequelize.STRING,
-      // allowNull: false,
+      type: Sequelize.INTEGER,
     },
     executor: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
     },
   });
 

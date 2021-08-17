@@ -1,14 +1,12 @@
 const logout = (req, res) => {
   if (req.session) {
     req.session.destroy(() => {
-      res.json({
+      res.status(200).json({
         user: {
-          logged: false
-        }
+          logged: false,
+        },
       });
     });
-  } else {
-    res.send("бульк-бульк");
   }
 };
 

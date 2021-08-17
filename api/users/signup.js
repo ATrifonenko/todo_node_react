@@ -33,7 +33,7 @@ const signUp = (req, res) => {
             req.session.userId = user.id;
             req.session.userEmail = user.email;
             res.status(200).json({
-              user: { logged: true, name: user.fullName },
+              user: { logged: true, id: user.id, name: user.fullName },
             });
           });
         });

@@ -6,6 +6,7 @@ import Container from 'react-bootstrap/Container';
 import TodoShort from '../TodoShort/TodoShort';
 import TodoFull from '../TodoFull/TodoFull';
 import api from '../../api';
+import { useAuth } from '../../hooks/useAuth';
 
 function Todolist(props) {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -13,22 +14,27 @@ function Todolist(props) {
   const [idTodo, setIdTodo] = useState(null);
   const [isGetingTodo, setIsGetingTodo] = useState(true);
 
+  const { user } = useAuth();
+
   const showFull = (id) => {
-    console.log(id);
     setIdTodo(id);
     setIsOpenModal(true);
   };
 
+  const fetchTodo = async () => {
+    const todo = await api.todo.getTodo(user.id);
+    setTodos(todo);
+    setIsGetingTodo(false);
+  };
+
   useEffect(() => {
-    const fetchTodo = async () => {
-      const todo = await api.todo.getTodo();
-      setTodos(todo);
-      setIsGetingTodo(false);
-    };
     fetchTodo();
   }, []);
 
-  const closeFull = () => setIsOpenModal(false);
+  const closeFull = () => {
+    setIsOpenModal(false);
+    fetchTodo();
+  };
 
   return (
     <>
@@ -37,7 +43,7 @@ function Todolist(props) {
           <Container className="flex-row bg-light border">
             <Navbar.Brand>Список задач</Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
-              <Navbar.Text>Вы вошли как: Трифоненко Андрей Сергеевич</Navbar.Text>
+              <Navbar.Text>Вы вошли как: {user.name}</Navbar.Text>
               <Button className="ms-3" variant="secondary" size="sm" onClick={props.logoutBtn}>
                 Выйти
               </Button>
@@ -45,6 +51,9 @@ function Todolist(props) {
           </Container>
         </Navbar>
       </Container>
+      <Button className="ms-3" variant="primary" size="lg" onClick={() => showFull()}>
+        Создать задачу
+      </Button>
       <Container fluid="sm" className="d-flex flex-wrap justify-content-center">
         {isGetingTodo ? (
           <Spinner animation="border" />

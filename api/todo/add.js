@@ -1,16 +1,23 @@
 const models = require('../../database');
 
 const add = (req, res) => {
-  const { title, desc, priority, status, date, executor } = req.body;
+  const { title, desc, priority, status, date_end, executor, creator } = req.body;
 
   models.Todo.create({
     title,
     desc,
     priority,
     status,
-    date_end: date,
+    date_end,
     executor,
-  }).then((todo) => res.status(200).json({ todo }));
+    creator,
+  }).then((todo) => {
+    if (todo.executor !== todo.creator) {
+      models.User.findOne({ where: { id: executor } })
+        .then((user) => user.update({ leader: creator }))
+        .then(() => res.status(200).json({ todo }));
+    } else res.status(200).json({ todo });
+  });
 };
 
 module.exports = add;

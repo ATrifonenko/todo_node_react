@@ -5,15 +5,16 @@ const checkAuth = (req, res) => {
 
   if (userId || email) {
     models.User.findByPk(userId).then((user) => {
-      res.json({
+      res.status(200).json({
         user: {
           logged: true,
+          id: user.id,
           name: user.fullName,
         },
       });
     });
   } else {
-    res.json({
+    res.status(401).json({
       user: {
         logged: false,
       },

@@ -1,7 +1,11 @@
 const models = require('../../database');
+const { Op } = require('sequelize');
 
 const getTodo = (req, res) => {
-  models.Todo.findAll().then((todo) => res.status(200).json({ todo }));
+  const { userId } = req.query;
+  models.Todo.findAll({ where: { [Op.or]: [{ creator: userId }, { executor: userId }] } }).then((todo) =>
+    res.status(200).json({ todo })
+  );
 };
 
 module.exports = getTodo;

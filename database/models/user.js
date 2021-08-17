@@ -5,6 +5,7 @@ module.exports = (sequelize, Sequelize) => {
     firstName: { type: Sequelize.STRING, allowNull: false },
     secondName: { type: Sequelize.STRING, allowNull: false },
     patronymic: { type: Sequelize.STRING, allowNull: false },
+    leader: { type: Sequelize.INTEGER },
     fullName: {
       type: Sequelize.VIRTUAL(Sequelize.STRING, ['secondName', 'firstName', 'patronymic']),
       get() {
