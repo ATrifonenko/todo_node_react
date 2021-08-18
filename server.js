@@ -38,8 +38,10 @@ server.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, './client/build', 'index.html'));
 });
 
-server.listen(5000, async function () {
+const port = process.env.PORT || 5000;
+
+server.listen(port, async function () {
   await models.sequelize.sync();
   console.log('All models were synchronized successfully.');
-  console.log('Server lestening on port 5000!');
+  console.log(`Server lestening on port ${port}!`);
 });
