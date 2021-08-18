@@ -2,8 +2,12 @@ import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Navbar from 'react-bootstrap/Navbar';
 import Spinner from 'react-bootstrap/Spinner';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Container from 'react-bootstrap/Container';
-import TodoShort from '../TodoShort/TodoShort';
+import Group from '../Group/Group';
 import TodoFull from '../TodoFull/TodoFull';
 import api from '../../api';
 import { useAuth } from '../../hooks/useAuth';
@@ -13,8 +17,13 @@ function Todolist(props) {
   const [todos, setTodos] = useState([]);
   const [idTodo, setIdTodo] = useState(null);
   const [isGetingTodo, setIsGetingTodo] = useState(true);
+  const [groupBy, setGroupBy] = useState('updatedAt');
 
   const { user } = useAuth();
+
+  useEffect(() => {
+    fetchTodo();
+  }, []);
 
   const showFull = (id) => {
     setIdTodo(id);
@@ -23,17 +32,29 @@ function Todolist(props) {
 
   const fetchTodo = async () => {
     const todo = await api.todo.getTodo(user.id);
-    setTodos(todo);
+    setTodos([...todo]);
     setIsGetingTodo(false);
   };
 
-  useEffect(() => {
-    fetchTodo();
-  }, []);
+  useEffect(() => {}, [todos]);
 
   const closeFull = () => {
+    setIdTodo(null);
     setIsOpenModal(false);
     fetchTodo();
+  };
+
+  const group = (groupBy) => {
+    const sortedTodos = todos.sort((a, b) => {
+      if (groupBy !== 'executor') {
+        const dateA = new Date(a[groupBy]);
+        const dateB = new Date(b[groupBy]);
+        return groupBy === 'date_end' ? dateA - dateB : dateB - dateA;
+      }
+      return a[groupBy] - b[groupBy];
+    });
+    setGroupBy(groupBy);
+    setTodos([...sortedTodos]);
   };
 
   return (
@@ -51,24 +72,37 @@ function Todolist(props) {
           </Container>
         </Navbar>
       </Container>
-      <Button className="ms-3" variant="primary" size="lg" onClick={() => showFull()}>
-        Создать задачу
-      </Button>
+      <Container>
+        <Row className="justify-content-between">
+          <Col sm>
+            <FloatingLabel label="Группировать по:">
+              <Form.Select onChange={(e) => group(e.target.value)}>
+                <option value="updatedAt">дате обновления</option>
+                <option value="date_end">дате завершения</option>
+                <option value="executor">ответственным</option>
+              </Form.Select>
+            </FloatingLabel>
+          </Col>
+          <Col sm>
+            <Button className="w-100 h-100" variant="primary" size="lg" onClick={() => showFull()}>
+              Создать задачу
+            </Button>
+          </Col>
+        </Row>
+      </Container>
       <Container fluid="sm" className="d-flex flex-wrap justify-content-center">
         {isGetingTodo ? (
           <Spinner animation="border" />
         ) : (
-          todos.map((todo) => (
-            <TodoShort
-              showFull={showFull}
+          todos.map((todo, idx, todos) => (
+            <Group
               key={todo.id}
-              id={todo.id}
-              title={todo.title}
-              status={todo.status}
-              priority={todo.priority}
-              date={todo.date_end}
-              executor={todo.executor}
-            />
+              groupBy={groupBy}
+              todo={todo}
+              prevTodo={todos[idx - 1]}
+              index={idx}
+              showFull={showFull}
+            ></Group>
           ))
         )}
       </Container>
