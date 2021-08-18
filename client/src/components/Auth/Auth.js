@@ -3,6 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useAuth } from '../../hooks/useAuth';
+import Alert from 'react-bootstrap/Alert';
 import './Auth.css';
 
 function Auth(props) {
@@ -21,7 +22,10 @@ function Auth(props) {
 
     if (Object.entries(validationErrors).length === 0) {
       setErrors({});
-      props.submit(email, password, firstName, secondName, patronymic).then(() => history.replace('/'));
+      props
+        .submit(email, password, firstName, secondName, patronymic)
+        .then(() => history.replace('/'))
+        .catch((err) => setErrors(() => ({ errors: err.response.data.errors })));
     } else {
       setErrors(validationErrors);
     }
@@ -83,6 +87,11 @@ function Auth(props) {
     <div className="container">
       <h2 className="auth-box__title">{props.type === 'signin' ? 'Вход' : 'Регистрация'}</h2>
       <Form noValidate className="auth-box" onSubmit={submit}>
+        {errors.errors?.global ? (
+          <Alert className="mt-3" variant="danger">
+            {errors.errors.global}
+          </Alert>
+        ) : null}
         {props.type === 'signup' && username}
         <Form.Group className="mb-3" controlId="formEmail">
           <Form.Label>Email адрес</Form.Label>
