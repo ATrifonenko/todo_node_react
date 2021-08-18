@@ -4,6 +4,7 @@ const userModel = require('./models/user.js');
 const todoModel = require('./models/todo.js');
 
 const sequelize = new Sequelize(config.DB_NAME, config.DB_USER, config.DB_PASSWORD, {
+  host: config.DB_HOST || 'localhost',
   dialect: 'mysql',
   define: { timestamps: true },
 });
