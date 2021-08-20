@@ -1,46 +1,93 @@
+import { useState, useEffect } from 'react';
 import TodoShort from '../TodoShort/TodoShort';
 import Alert from 'react-bootstrap/Alert';
 
 function Group(props) {
-  const { id, title, desc, status, priority, date_end, executor } = props.todo;
+  const [groups, setGroups] = useState([]);
 
-  // const today = Date.now();
-  // const day = 24 * 60 * 60 * 1000;
-  // const date_end_todo = new Date(date_end);
-  // const date_end_prevtodo = new Date(props.prevTodo?.date_end);
+  useEffect(() => groupBy(props.groupBy), [props]);
 
-  // const isNewDateSeparator =
-  //   today + day > date_end_todo.valueOf()
-  //     ? 'Сегодня и просроченные'
-  //     : // : date_end_todo - date_end_prevtodo > day && today + day
-  //       // ? 'На ближайшую неделю'
-  //       false;
+  const groupBy = (groupBy) => {
+    const newGroups = [];
 
-  const isNewExecutor = executor !== props.prevTodo?.executor || props.index === 0;
+    const grouping = (todo, category) => {
+      let existingGroups = newGroups.filter((group) => group.category === category);
+
+      if (existingGroups.length > 0) {
+        existingGroups[0].todos.push(todo);
+      } else {
+        let newGroup = {
+          category: category,
+          todos: [todo],
+        };
+        newGroups.push(newGroup);
+      }
+    };
+
+    const groupByDate = () => {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const day = 24 * 60 * 60 * 1000;
+
+      for (const todo of props.todos) {
+        let date_end = new Date(todo.date_end);
+        date_end = new Date(date_end.getFullYear(), date_end.getMonth(), date_end.getDate());
+
+        const category =
+          date_end < today
+            ? 'Старые и просроченные'
+            : date_end.getTime() === today.getTime()
+            ? 'Сегодня'
+            : date_end.getTime() < today.getTime() + day * 6
+            ? 'На неделю'
+            : 'Больше недели';
+        grouping(todo, category);
+      }
+    };
+
+    const groupByExecutor = () => {
+      for (const todo of props.todos) {
+        grouping(todo, todo.executor);
+      }
+    };
+
+    const groupByUpdatedAt = () => {
+      for (const todo of props.todos) {
+        grouping(todo, '^ Дата обновления ^');
+      }
+    };
+
+    if (groupBy === 'date_end') groupByDate();
+    if (groupBy === 'executor') groupByExecutor();
+    if (groupBy === 'updatedAt') groupByUpdatedAt();
+
+    setGroups(() => [...newGroups]);
+  };
 
   return (
     <>
-      {isNewExecutor && props.groupBy === 'executor' ? (
-        <Alert className="mt-3" variant="secondary">
-          {executor}
-        </Alert>
-      ) : null}
-      {/* {isNewDateSeparator && props.groupBy === 'date_end' ? (
-        <Alert className="mt-3" variant="secondary">
-          {isNewDateSeparator}
-        </Alert>
-      ) : null} */}
-      <TodoShort
-        showFull={props.showFull}
-        key={id}
-        id={id}
-        title={title}
-        desc={desc}
-        status={status}
-        priority={priority}
-        date={date_end}
-        executor={executor}
-      />
+      {groups.map((group) => {
+        return (
+          <>
+            <Alert className="mt-3" variant="secondary">
+              {group.category}
+            </Alert>
+            {group.todos.map((todo) => (
+              <TodoShort
+                showFull={props.showFull}
+                key={todo.id}
+                id={todo.id}
+                title={todo.title}
+                desc={todo.desc}
+                status={todo.status}
+                priority={todo.priority}
+                date={todo.date_end}
+                executor={todo.executor}
+              />
+            ))}
+          </>
+        );
+      })}
     </>
   );
 }

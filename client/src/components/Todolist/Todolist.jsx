@@ -94,16 +94,8 @@ function Todolist(props) {
         {isGetingTodo ? (
           <Spinner animation="border" />
         ) : (
-          todos.map((todo, idx, todos) => (
-            <Group
-              key={todo.id}
-              groupBy={groupBy}
-              todo={todo}
-              prevTodo={todos[idx - 1]}
-              index={idx}
-              showFull={showFull}
-            ></Group>
-          ))
+          <Group todos={todos} groupBy={groupBy} showFull={showFull}></Group>
+          //  ))
         )}
       </Container>
       <TodoFull show={isOpenModal} closeFull={closeFull} id={idTodo} status priority date executor></TodoFull>
