@@ -47,7 +47,8 @@ function Group(props) {
 
     const groupByExecutor = () => {
       for (const todo of props.todos) {
-        grouping(todo, todo.executor);
+        const executor = props.myEmployee.filter((executor) => executor.id === todo.executor);
+        grouping(todo, executor[0].name);
       }
     };
 
@@ -72,19 +73,22 @@ function Group(props) {
             <Alert className="mt-3" variant="secondary">
               {group.category}
             </Alert>
-            {group.todos.map((todo) => (
-              <TodoShort
-                showFull={props.showFull}
-                key={todo.id}
-                id={todo.id}
-                title={todo.title}
-                desc={todo.desc}
-                status={todo.status}
-                priority={todo.priority}
-                date={todo.date_end}
-                executor={todo.executor}
-              />
-            ))}
+            {group.todos.map((todo) => {
+              const executor = props.myEmployee.filter((executor) => executor.id === todo.executor);
+              return (
+                <TodoShort
+                  showFull={props.showFull}
+                  key={todo.id}
+                  id={todo.id}
+                  title={todo.title}
+                  desc={todo.desc}
+                  status={todo.status}
+                  priority={todo.priority}
+                  date={todo.date_end}
+                  executor={executor[0].name}
+                />
+              );
+            })}
           </>
         );
       })}

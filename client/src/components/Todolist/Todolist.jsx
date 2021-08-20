@@ -18,10 +18,12 @@ function Todolist(props) {
   const [idTodo, setIdTodo] = useState(null);
   const [isGetingTodo, setIsGetingTodo] = useState(true);
   const [groupBy, setGroupBy] = useState('updatedAt');
+  const [myEmployee, setMyEmployee] = useState([]);
 
   const { user } = useAuth();
 
   useEffect(() => {
+    api.auth.getMyEmployee(user.id).then((employee) => setMyEmployee(employee));
     fetchTodo();
   }, []);
 
@@ -38,10 +40,12 @@ function Todolist(props) {
 
   useEffect(() => {}, [todos]);
 
-  const closeFull = () => {
+  const closeFull = (s) => {
     setIdTodo(null);
     setIsOpenModal(false);
-    fetchTodo();
+    if (s) {
+      fetchTodo();
+    }
   };
 
   const group = (groupBy) => {
@@ -94,11 +98,11 @@ function Todolist(props) {
         {isGetingTodo ? (
           <Spinner animation="border" />
         ) : (
-          <Group todos={todos} groupBy={groupBy} showFull={showFull}></Group>
+          <Group todos={todos} groupBy={groupBy} showFull={showFull} myEmployee={myEmployee}></Group>
           //  ))
         )}
       </Container>
-      <TodoFull show={isOpenModal} closeFull={closeFull} id={idTodo} status priority date executor></TodoFull>
+      <TodoFull show={isOpenModal} closeFull={closeFull} id={idTodo} myEmployee={myEmployee}></TodoFull>
     </>
   );
 }

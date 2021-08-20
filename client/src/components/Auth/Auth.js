@@ -18,7 +18,7 @@ function Auth(props) {
 
   const submit = (e) => {
     e.preventDefault();
-    const validationErrors = validate(email, password);
+    const validationErrors = validate(email, password, firstName, secondName);
 
     if (Object.entries(validationErrors).length === 0) {
       setErrors({});
@@ -31,7 +31,7 @@ function Auth(props) {
     }
   };
 
-  const validate = (email, password) => {
+  const validate = (email, password, firstName, secondName) => {
     const validationErrors = {};
     if (
       !email ||
@@ -45,6 +45,12 @@ function Auth(props) {
       validationErrors.password =
         'Пароль должен содержать не менее восьми знаков, включать заглавные и строчные буквы, цифры';
     }
+    if (!firstName && props.type === 'signup') {
+      validationErrors.firstName = 'Не может быть пустым';
+    }
+    if (!secondName && props.type === 'signup') {
+      validationErrors.secondName = 'Не может быть пустым';
+    }
     return validationErrors;
   };
 
@@ -56,9 +62,14 @@ function Auth(props) {
           required
           type="text"
           placeholder="Иванов"
-          onChange={(e) => setSecondName(e.target.value)}
+          onChange={(e) => {
+            setSecondName(e.target.value);
+            setErrors((err) => ({ ...err, secondName: false }));
+          }}
           value={secondName}
+          isInvalid={!!errors.secondName}
         />
+        <Form.Control.Feedback type="invalid">{errors.secondName}</Form.Control.Feedback>
       </Form.Group>
       <Form.Group className="mb-3" controlId="formFirstName">
         <Form.Label>Имя</Form.Label>
@@ -66,14 +77,18 @@ function Auth(props) {
           required
           type="text"
           placeholder="Иван"
-          onChange={(e) => setFirstName(e.target.value)}
+          onChange={(e) => {
+            setFirstName(e.target.value);
+            setErrors((err) => ({ ...err, firstName: false }));
+          }}
           value={firstName}
+          isInvalid={!!errors.firstName}
         />
+        <Form.Control.Feedback type="invalid">{errors.firstName}</Form.Control.Feedback>
       </Form.Group>
       <Form.Group className="mb-3" controlId="formPatronymic">
         <Form.Label>Отчество</Form.Label>
         <Form.Control
-          required
           type="text"
           placeholder="Иванович"
           onChange={(e) => setPatronymic(e.target.value)}

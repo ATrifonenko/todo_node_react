@@ -23,11 +23,8 @@ function TodoFull(props) {
   const [data, setData] = useState(initData);
 
   const [disabledField, setDisabledField] = useState(false);
-  const [myEmployee, setMyEmployee] = useState([]);
 
   useEffect(() => {
-    api.auth.getMyEmployee(user.id).then((employee) => setMyEmployee(employee));
-
     if (props.id) {
       const fetchTodo = async () => {
         const todo = await api.todo.getTodoById(props.id);
@@ -46,9 +43,9 @@ function TodoFull(props) {
     console.log(data);
   }, [data]);
 
-  const closeModal = () => {
+  const closeModal = (s) => {
     setDisabledField(false);
-    props.closeFull();
+    props.closeFull(s);
   };
 
   const handleChange = (e) => {
@@ -58,9 +55,9 @@ function TodoFull(props) {
   const onFormSubmit = (e) => {
     e.preventDefault();
     if (props.id) {
-      api.todo.update(data).then(() => closeModal());
+      api.todo.update(data).then(() => closeModal('withUpdate'));
     } else {
-      api.todo.add(data).then(() => closeModal());
+      api.todo.add(data).then(() => closeModal('withAdd'));
     }
   };
 
@@ -123,8 +120,8 @@ function TodoFull(props) {
           <Form.Group className="mb-3" controlId="executor">
             <Form.Label>Ответственный</Form.Label>
             <Form.Select disabled={disabledField} value={data.executor} onChange={handleChange}>
-              {myEmployee
-                ? myEmployee.map((user) => (
+              {props.myEmployee
+                ? props.myEmployee.map((user) => (
                     <option key={user.id} value={user.id}>
                       {user.name}
                     </option>
